@@ -1,0 +1,57 @@
+name: Build and publish image and Helm chart
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository_owner }}/hello-world
+      CHART_NAME: hello-world
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Package Helm chart
+        run: |
+          helm lint charts/${{ env.CHART_NAME }}
+          helm package charts/${{ env.CHART_NAME }} --destination packaged
+
+      - name: Login to Helm registry (GHCR)
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.REGISTRY }}                 --username ${{ github.actor }}                 --password-stdin
+
+      - name: Push Helm chart
+        run: |
+          CHART_FILE=$(ls packaged/${{ env.CHART_NAME }}-*.tgz)
+          helm push "${CHART_FILE}" oci://${{ env.REGISTRY }}/${{ github.repository_owner }}/charts

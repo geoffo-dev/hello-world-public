@@ -1,0 +1,6 @@
+apiVersion: v2
+name: hello-world
+description: A hello world app deployed via Helm using GHCR image
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
