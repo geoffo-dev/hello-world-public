@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/geoffo-dev/hello-world-public/compare/v1.0.2...v1.0.3) (2025-12-01)
+
+
+### Bug Fixes
+
+* fixing syntax issues ([bec4c34](https://github.com/geoffo-dev/hello-world-public/commit/bec4c34d6dfe0820f37382c5a0232710a9b3dcdc))
+* Updating to build arm images too ([92ea10b](https://github.com/geoffo-dev/hello-world-public/commit/92ea10ba18c6f01b66194d8c106de0ca80ca3d61))
+
 ## [1.0.2](https://github.com/geoffo-dev/hello-world-public/compare/v1.0.1...v1.0.2) (2025-12-01)
 
 
