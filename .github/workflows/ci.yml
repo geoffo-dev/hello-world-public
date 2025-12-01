@@ -49,8 +49,8 @@ jobs:
 
     env:
       REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ github.repository_owner }}/hello-world
-      CHART_NAME: hello-world
+      IMAGE_NAME: ${{ github.repository_owner }}/hello-world-public
+      CHART_NAME: hello-world-public
 
     steps:
       - name: Checkout

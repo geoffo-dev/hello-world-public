@@ -1,6 +1,6 @@
 image:
   # Replace <OWNER> with your GitHub username or org (lowercase)
-  repository: ghcr.io/geoffo-dev/hello-world
+  repository: ghcr.io/geoffo-dev/hello-world-public
   tag: "latest"
   pullPolicy: IfNotPresent
 

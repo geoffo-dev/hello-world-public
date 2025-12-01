@@ -7,7 +7,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "sed -i 's/^version:.*/version: ${nextRelease.version}/' charts/hello-world/Chart.yaml && sed -i 's/^appVersion:.*/appVersion: \"${nextRelease.version}\"/' charts/hello-world/Chart.yaml"
+        "prepareCmd": "sed -i 's/^version:.*/version: ${nextRelease.version}/' charts/hello-world-public/Chart.yaml && sed -i 's/^appVersion:.*/appVersion: \"${nextRelease.version}\"/' charts/hello-world-public/Chart.yaml"
       }
     ],
     "@semantic-release/github",
@@ -16,7 +16,7 @@
       {
         "assets": [
           "CHANGELOG.md",
-          "charts/hello-world/Chart.yaml"
+          "charts/hello-world-public/Chart.yaml"
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }

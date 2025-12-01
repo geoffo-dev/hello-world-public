@@ -1,5 +1,5 @@
 apiVersion: v2
-name: hello-world
+name: hello-world-public
 description: A hello world app deployed via Helm using GHCR image
 type: application
 version: 1.0.1
