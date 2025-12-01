@@ -1,4 +1,4 @@
-name: Build and publish image and Helm chart
+name: Build, publish & release
 
 on:
   push:
@@ -6,7 +6,35 @@ on:
   workflow_dispatch: {}
 
 jobs:
+  release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run semantic-release
+
   build-and-publish:
+    needs: release
     runs-on: ubuntu-latest
 
     permissions:
@@ -22,6 +50,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Read version from Chart.yaml
+        id: chart
+        run: |
+          VERSION=$(grep '^version:' charts/${{ env.CHART_NAME }}/Chart.yaml | awk '{print $2}')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -40,12 +74,12 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.chart.outputs.version }}
 
       - name: Package Helm chart
         run: |
           helm lint charts/${{ env.CHART_NAME }}
-          helm package charts/${{ env.CHART_NAME }} --destination packaged
+          helm package charts/${{ env.CHART_NAME }} --version ${{ steps.chart.outputs.version }} --app-version ${{ steps.chart.outputs.version }} --destination packaged
 
       - name: Login to Helm registry (GHCR)
         run: |
